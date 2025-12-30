@@ -1,4 +1,8 @@
-heremodule.exports = async (req, res) => {
+// Vercel serverless function (api/tiktok.js)
+// Proxies requests to the Veron API to avoid browser CORS issues.
+// If you deploy to Vercel, place this file under /api/tiktok.js
+
+module.exports = async (req, res) => {
   try {
     const url = req.query.url || req.headers['x-url'];
     if (!url) {
@@ -11,21 +15,17 @@ heremodule.exports = async (req, res) => {
     const apiRes = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        // Add any headers required by the upstream API here
         'Accept': 'application/json'
       }
     });
 
     const text = await apiRes.text();
-    // forward status and body
     res.status(apiRes.status);
     try {
-      // If JSON, send JSON
       const json = JSON.parse(text);
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(json));
     } catch (e) {
-      // Fallback: send raw text
       res.setHeader('Content-Type', 'text/plain');
       res.send(text);
     }
