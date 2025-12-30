@@ -4,80 +4,257 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AJ MEDIA DOWNLOADER</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Inline CSS (moved into index.html so it always loads) -->
+  <style>
+    :root{
+      --bg:#071021;
+      --panel:#0b1220;
+      --accent:#ff5f6d;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+      --max-width:980px;
+      color-scheme: dark;
+      --sidebar-width:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071021 0%, #071726 100%);
+      color:#e6eef6;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding-right: calc(var(--sidebar-width) + 24px);
+    }
+
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      padding:20px;
+    }
+
+    header.header{
+      padding:18px 0 6px;
+    }
+    .brand h1{margin:0;font-size:20px;letter-spacing:0.6px}
+    .tag{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    main.main{
+      padding:12px 0 36px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+      padding:18px;
+    }
+
+    .search label{font-size:13px;color:var(--muted)}
+    .input-row{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    input[type="url"]{
+      flex:1;
+      padding:12px 14px;
+      border-radius:10px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.04);
+      color:inherit;
+      outline:none;
+    }
+    button{cursor:pointer}
+    #fetchBtn{
+      padding:10px 14px;
+      border-radius:10px;
+      background:linear-gradient(90deg,var(--accent),#ff8a6f);
+      color:#071021;
+      border:0;
+      font-weight:600;
+    }
+    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+
+    .result{
+      margin-top:18px;
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .cover{
+      width:320px;
+      height:180px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#06111a;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .result-left{flex:0 0 320px}
+    .result-right{flex:1;min-width:0}
+
+    .meta{display:flex;gap:12px;align-items:center;margin-top:8px}
+    .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
+    .authorName{font-weight:700}
+    .authorUsername{color:var(--muted);font-size:13px}
+
+    .stats{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+    .stats > div{background:var(--glass);padding:8px 12px;border-radius:8px;font-size:13px;color:var(--muted)}
+
+    .created{color:var(--muted);margin-top:12px;font-size:13px}
+
+    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .btn{
+      display:inline-block;
+      padding:10px 14px;
+      background:linear-gradient(90deg,var(--accent),#ff8a6f);
+      color:#071021;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+      border:0;
+    }
+    .btn.alt{background:#222a36;color:#e6eef6}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .btn.disabled{opacity:0.55;pointer-events:none}
+
+    .notice{margin-top:18px;color:var(--muted);font-size:14px}
+    .error{margin-top:12px;color:#ffb4b4;background:rgba(255,80,80,0.07);padding:10px;border-radius:8px}
+
+    footer.footer{padding:18px;color:var(--muted);font-size:13px; width:100%; max-width:var(--max-width);}
+
+    /* Sidebar */
+    .sidebar{
+      position:fixed;
+      right:12px;
+      top:24px;
+      width:var(--sidebar-width);
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:flex-start;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+    }
+    .dev-toggle{
+      width:100%;
+      text-align:left;
+      padding:8px 10px;
+      border-radius:8px;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      font-weight:600;
+    }
+    .dev-list{display:flex;flex-direction:column;gap:12px;width:100%}
+    .dev{display:flex;gap:10px;align-items:center}
+    .dev img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
+    .dev-name{font-weight:700}
+    .dev-role{color:var(--muted);font-size:13px}
+    .dev-bio{color:var(--muted);font-size:12px;margin-top:4px}
+    .dev-link{color:var(--muted);font-size:13px;text-decoration:none;margin-top:6px;display:inline-block}
+
+    /* small screens */
+    @media (max-width:900px){
+      body{padding-right:12px}
+      .cover{width:100%;height:200px}
+      .result{flex-direction:column}
+      .result-left{width:100%}
+      .sidebar{position:static;width:100%;flex-direction:row;justify-content:space-between;padding:8px;margin-top:18px}
+      .dev-list{flex-direction:row;gap:8px}
+      .dev{flex-direction:column;align-items:center}
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="brand">
-      <h1>AJ MEDIA DOWNLOADER</h1>
-      <p class="tag">Download TikTok videos (MP4) and audio (MP3)</p>
-    </div>
-  </header>
-
-  <main class="main">
-    <section class="search">
-      <label for="tiktokUrl">Paste TikTok URL</label>
-      <div class="input-row">
-        <input id="tiktokUrl" type="url" placeholder="https://vm.tiktok.com/..." />
-        <button id="fetchBtn">Fetch</button>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <h1>AJ MEDIA DOWNLOADER</h1>
+        <p class="tag">Download TikTok videos (MP4) and audio (MP3)</p>
       </div>
-      <p id="hint" class="hint">Example: https://vm.tiktok.com/…</p>
-    </section>
+    </header>
 
-    <section id="result" class="result hidden" aria-live="polite">
-      <div class="result-left">
-        <img id="cover" class="cover" src="" alt="cover" />
-      </div>
-      <div class="result-right">
-        <h2 id="title"></h2>
-        <div class="meta">
-          <img id="authorAvatar" class="avatar" src="" alt="author avatar" />
-          <div>
-            <div id="authorName" class="authorName"></div>
-            <div id="authorUsername" class="authorUsername"></div>
+    <main class="main">
+      <div class="card">
+        <section class="search" aria-labelledby="search-label">
+          <label id="search-label" for="tiktokUrl">Paste TikTok URL</label>
+          <div class="input-row">
+            <input id="tiktokUrl" type="url" placeholder="https://vm.tiktok.com/..." />
+            <button id="fetchBtn" aria-label="Fetch">Fetch</button>
+            <button id="exampleBtn" class="btn ghost" title="Use example">Example</button>
           </div>
-        </div>
+          <p id="hint" class="hint">Example: https://vm.tiktok.com/…</p>
+        </section>
 
-        <div class="stats">
-          <div><strong>Play</strong><br/><span id="play"></span></div>
-          <div><strong>Like</strong><br/><span id="like"></span></div>
-          <div><strong>Comment</strong><br/><span id="comment"></span></div>
-          <div><strong>Share</strong><br/><span id="share"></span></div>
-        </div>
+        <section id="notice" class="notice" aria-live="polite"></section>
 
-        <p class="created" id="create_at"></p>
+        <section id="resultWrapper" class="result hidden" aria-live="polite">
+          <div class="result-left">
+            <img id="cover" class="cover" src="" alt="Video cover" />
+          </div>
 
-        <div class="actions">
-          <a id="downloadVideo" class="btn disabled" target="_blank" rel="noopener">Download MP4</a>
-          <a id="downloadAudio" class="btn alt disabled" target="_blank" rel="noopener">Download MP3</a>
-          <button id="openVideo" class="btn ghost" disabled>Open Video</button>
-        </div>
+          <div class="result-right">
+            <h2 id="title"></h2>
 
-        <div id="error" class="error hidden" role="status"></div>
+            <div class="meta">
+              <img id="authorAvatar" class="avatar" src="" alt="Author avatar" />
+              <div>
+                <div id="authorName" class="authorName"></div>
+                <div id="authorUsername" class="authorUsername"></div>
+              </div>
+            </div>
+
+            <div class="stats" aria-hidden="false">
+              <div><strong>Play</strong><br/><span id="play">-</span></div>
+              <div><strong>Like</strong><br/><span id="like">-</span></div>
+              <div><strong>Comment</strong><br/><span id="comment">-</span></div>
+              <div><strong>Share</strong><br/><span id="share">-</span></div>
+            </div>
+
+            <p class="created" id="create_at"></p>
+
+            <div class="actions">
+              <a id="downloadVideo" class="btn disabled" target="_blank" rel="noopener">Download MP4</a>
+              <a id="downloadAudio" class="btn alt disabled" target="_blank" rel="noopener">Download MP3</a>
+              <button id="openVideo" class="btn ghost" disabled>Open Video</button>
+            </div>
+
+            <div id="error" class="error hidden" role="status"></div>
+          </div>
+        </section>
       </div>
-    </section>
+    </main>
 
-    <section id="notice" class="notice">
-      <p>If downloads do not start, open the link in a new tab or use the serverless proxy (provided) — recommended for Vercel deployments.</p>
-    </section>
-  </main>
+    <footer class="footer">
+      <small>AJ MEDIA DOWNLOADER — powered by VeronDev API.</small>
+    </footer>
+  </div>
 
+  <!-- Sidebar (always included) -->
   <aside class="sidebar" id="sidebar">
-    <button id="devToggle" class="dev-toggle">Developers</button>
+    <button id="devToggle" class="dev-toggle" aria-expanded="true">Developers</button>
 
-    <div id="devList" class="dev-list">
-      <div class="dev">
-        <img src="https://github.com/Itzpatron.png" alt="AJ" />
+    <div id="devList" class="dev-list" aria-live="polite">
+      <div class="dev" title="AJ — Front End">
+        <img src="https://github.com/Itzpatron.png" alt="AJ avatar" />
         <div>
           <div class="dev-name">AJ</div>
           <div class="dev-role">Front End</div>
-          <div class="dev-bio">Builds the UI and experience.</div>
+          <div class="dev-bio">Builds the UI and front-end experience.</div>
           <a class="dev-link" href="https://github.com/Itzpatron" target="_blank" rel="noopener">github.com/Itzpatron</a>
         </div>
       </div>
 
-      <div class="dev">
-        <img src="https://github.com/VerknDev.png" alt="Uthuman" />
+      <div class="dev" title="Uthuman — Back End">
+        <img src="https://github.com/VerknDev.png" alt="Uthuman avatar" />
         <div>
           <div class="dev-name">Uthuman</div>
           <div class="dev-role">Back End</div>
@@ -88,10 +265,170 @@
     </div>
   </aside>
 
-  <footer class="footer">
-    <small>AJ MEDIA DOWNLOADER — built for quick TikTok downloads. Powered by VeronDev API.</small>
-  </footer>
+  <!-- Inline JS -->
+  <script>
+    // Elements
+    const fetchBtn = document.getElementById('fetchBtn');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const tiktokUrlInput = document.getElementById('tiktokUrl');
+    const resultWrapper = document.getElementById('resultWrapper');
+    const coverEl = document.getElementById('cover');
+    const titleEl = document.getElementById('title');
+    const authorAvatarEl = document.getElementById('authorAvatar');
+    const authorNameEl = document.getElementById('authorName');
+    const authorUsernameEl = document.getElementById('authorUsername');
+    const playEl = document.getElementById('play');
+    const likeEl = document.getElementById('like');
+    const commentEl = document.getElementById('comment');
+    const shareEl = document.getElementById('share');
+    const createAtEl = document.getElementById('create_at');
+    const downloadVideo = document.getElementById('downloadVideo');
+    const downloadAudio = document.getElementById('downloadAudio');
+    const openVideo = document.getElementById('openVideo');
+    const errorEl = document.getElementById('error');
+    const noticeEl = document.getElementById('notice');
 
-  <script src="script.js"></script>
+    const devToggle = document.getElementById('devToggle');
+    const devList = document.getElementById('devList');
+
+    // Developer toggle
+    devToggle.addEventListener('click', () => {
+      const hidden = devList.classList.toggle('hidden');
+      devToggle.setAttribute('aria-expanded', String(!hidden));
+    });
+
+    // Utility
+    function showError(msg){
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+      errorEl.style.display = 'block';
+    }
+    function clearError(){
+      errorEl.textContent = '';
+      errorEl.classList.add('hidden');
+      errorEl.style.display = 'none';
+    }
+    function setNotice(msg){
+      noticeEl.textContent = msg || '';
+    }
+    function resetResult(){
+      titleEl.textContent = '';
+      coverEl.src = '';
+      authorAvatarEl.src = '';
+      authorNameEl.textContent = '';
+      authorUsernameEl.textContent = '';
+      playEl.textContent = '-';
+      likeEl.textContent = '-';
+      commentEl.textContent = '-';
+      shareEl.textContent = '-';
+      createAtEl.textContent = '';
+      downloadVideo.removeAttribute('href'); downloadVideo.classList.add('disabled');
+      downloadAudio.removeAttribute('href'); downloadAudio.classList.add('disabled');
+      openVideo.disabled = true;
+      resultWrapper.classList.add('hidden');
+    }
+    function enableLink(el, href, filename){
+      if (!el) return;
+      el.href = href;
+      el.classList.remove('disabled');
+      if (filename) el.setAttribute('download', filename);
+    }
+
+    // Direct fetch to Veron API
+    async function fetchDirect(fullUrl){
+      // Build endpoint
+      const apiUrl = 'https://veron-apis.zone.id/downloader/tiktok?url=' + encodeURIComponent(fullUrl);
+      // Note: this is a direct cross-origin request; it requires the upstream to permit CORS.
+      const res = await fetch(apiUrl, { method: 'GET', mode: 'cors', cache: 'no-cache' });
+      if (!res.ok) {
+        const txt = await res.text().catch(()=>null);
+        throw new Error('Upstream responded with ' + res.status + (txt ? ': ' + txt : ''));
+      }
+      return await res.json();
+    }
+
+    async function onFetchClicked(){
+      clearError();
+      setNotice('');
+      resetResult();
+
+      const url = (tiktokUrlInput.value || '').trim();
+      if (!url) {
+        showError('Please paste a TikTok URL first.');
+        return;
+      }
+
+      titleEl.textContent = 'Loading...';
+      resultWrapper.classList.remove('hidden');
+
+      try {
+        const json = await fetchDirect(url);
+
+        if (!json || !json.success || !json.result) {
+          throw new Error('Invalid response from API');
+        }
+
+        const r = json.result;
+        coverEl.src = r.cover || '';
+        titleEl.textContent = r.title || 'No title';
+        authorAvatarEl.src = (r.author && r.author.avatar) || '';
+        authorNameEl.textContent = (r.author && r.author.name) || '';
+        authorUsernameEl.textContent = (r.author && r.author.username) || '';
+        playEl.textContent = (r.stats && r.stats.play) || '-';
+        likeEl.textContent = (r.stats && r.stats.like) || '-';
+        commentEl.textContent = (r.stats && r.stats.comment) || '-';
+        shareEl.textContent = (r.stats && r.stats.share) || '-';
+        createAtEl.textContent = r.create_at || '';
+
+        const safeTitle = (r.title || 'tiktok').replace(/[^\w\s\-]/g,'').slice(0,60).replace(/\s+/g,'_');
+
+        if (r.videoUrl) {
+          enableLink(downloadVideo, r.videoUrl, safeTitle + '.mp4');
+          openVideo.onclick = ()=> window.open(r.videoUrl, '_blank', 'noopener');
+          openVideo.disabled = false;
+        } else {
+          downloadVideo.classList.add('disabled');
+          openVideo.disabled = true;
+        }
+
+        if (r.musicUrl) {
+          enableLink(downloadAudio, r.musicUrl, safeTitle + '.mp3');
+        } else {
+          downloadAudio.classList.add('disabled');
+        }
+
+        setNotice('Fetched successfully from Veron API.');
+      } catch (err) {
+        // If it's a CORS issue, modern browsers often throw a TypeError without clear message.
+        // Detect common CORS failure scenarios and show a helpful message.
+        const message = (err && err.message) ? err.message : String(err);
+        if (/Failed to fetch|NetworkError|TypeError/.test(message)) {
+          showError('Failed to fetch from the API directly. This is likely a CORS restriction from the Veron API. To fix this, deploy the serverless proxy (api/tiktok) to Vercel or run a local proxy. See README instructions.');
+          setNotice('If you want me to provide the serverless proxy (for Vercel) or a local server.js and package.json, say "provide proxy".');
+        } else {
+          showError('Error: ' + message);
+        }
+        resetResult();
+      }
+    }
+
+    // Example button prefill
+    exampleBtn.addEventListener('click', ()=>{
+      const example = 'https://vm.tiktok.com/ZSHKoXJsb6rmS-QB4FY/';
+      tiktokUrlInput.value = example;
+      onFetchClicked();
+    });
+
+    fetchBtn.addEventListener('click', onFetchClicked);
+    tiktokUrlInput.addEventListener('keydown', (e)=> { if (e.key === 'Enter') onFetchClicked(); });
+
+    // Small UX: prefill placeholder
+    if (!tiktokUrlInput.value) tiktokUrlInput.value = '';
+
+    // If opened via file://, warn user
+    if (location.protocol === 'file:') {
+      setNotice('You opened the file directly. For network requests to work reliably, serve this file via a local static server (e.g. `npx http-server` or deploy to Vercel).');
+    }
+  </script>
 </body>
 </html>
