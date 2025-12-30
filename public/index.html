@@ -18,161 +18,247 @@
       --sidebar-width:240px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{height:100%; margin:0; padding:0}
     body{
-      margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background: linear-gradient(180deg,#071021 0%, #071726 100%);
       color:#e6eef6;
-      min-height:100vh;
       display:flex;
       flex-direction:column;
-      align-items:center;
-      padding-right: calc(var(--sidebar-width) + 24px);
+      min-height:100vh;
+      padding-right: var(--sidebar-width);
     }
 
     .container{
       width:100%;
       max-width:var(--max-width);
       padding:20px;
+      margin:0 auto;
+      flex:1;
     }
 
     header.header{
-      padding:18px 0 6px;
+      padding:20px 0 10px;
     }
-    .brand h1{margin:0;font-size:20px;letter-spacing:0.6px}
-    .tag{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .brand h1{margin:0;font-size:24px;letter-spacing:0.5px}
+    .tag{margin:6px 0 0;color:var(--muted);font-size:14px}
 
     main.main{
-      padding:12px 0 36px;
+      padding:10px 0 30px;
     }
 
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius:var(--radius);
-      padding:18px;
+      padding:24px;
+      border:1px solid rgba(255,255,255,0.04);
     }
 
-    .search label{font-size:13px;color:var(--muted)}
+    .search label{font-size:14px;color:var(--muted);display:block;margin-bottom:8px}
     .input-row{
       display:flex;
-      gap:8px;
-      margin-top:8px;
+      gap:10px;
     }
     input[type="url"]{
       flex:1;
-      padding:12px 14px;
+      padding:14px 16px;
       border-radius:10px;
       background:var(--glass);
-      border:1px solid rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
       color:inherit;
+      font-size:16px;
       outline:none;
+      transition:border-color 0.2s;
     }
-    button{cursor:pointer}
+    input[type="url"]:focus{
+      border-color:var(--accent);
+    }
+    button{cursor:pointer;font-size:16px}
     #fetchBtn{
-      padding:10px 14px;
+      padding:14px 24px;
       border-radius:10px;
       background:linear-gradient(90deg,var(--accent),#ff8a6f);
       color:#071021;
       border:0;
       font-weight:600;
+      transition:transform 0.2s, opacity 0.2s;
     }
-    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+    #fetchBtn:hover{
+      transform:translateY(-1px);
+    }
+    #fetchBtn:active{
+      transform:translateY(0);
+    }
+    #fetchBtn.loading{
+      opacity:0.8;
+    }
+    .hint{color:var(--muted);font-size:13px;margin-top:10px;opacity:0.8}
 
     .result{
-      margin-top:18px;
+      margin-top:24px;
       display:flex;
-      gap:18px;
+      gap:24px;
       align-items:flex-start;
-      flex-wrap:wrap;
     }
     .cover{
-      width:320px;
-      height:180px;
+      width:360px;
+      height:200px;
       object-fit:cover;
       border-radius:10px;
       background:#06111a;
-      border:1px solid rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.05);
     }
-    .result-left{flex:0 0 320px}
+    .result-left{flex:0 0 auto}
     .result-right{flex:1;min-width:0}
 
-    .meta{display:flex;gap:12px;align-items:center;margin-top:8px}
-    .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
-    .authorName{font-weight:700}
-    .authorUsername{color:var(--muted);font-size:13px}
+    .meta{display:flex;gap:14px;align-items:center;margin-top:12px}
+    .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
+    .authorName{font-weight:700;font-size:16px}
+    .authorUsername{color:var(--muted);font-size:14px}
 
-    .stats{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
-    .stats > div{background:var(--glass);padding:8px 12px;border-radius:8px;font-size:13px;color:var(--muted)}
-
-    .created{color:var(--muted);margin-top:12px;font-size:13px}
-
-    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-    .btn{
-      display:inline-block;
+    .stats{display:flex;gap:14px;margin-top:16px;flex-wrap:wrap}
+    .stats > div{
+      background:var(--glass);
       padding:10px 14px;
+      border-radius:8px;
+      font-size:14px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,0.03);
+      min-width:80px;
+    }
+    .stats strong{display:block;margin-bottom:4px;font-size:12px;opacity:0.8}
+
+    .created{color:var(--muted);margin-top:14px;font-size:14px}
+
+    .actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 20px;
       background:linear-gradient(90deg,var(--accent),#ff8a6f);
       color:#071021;
       border-radius:10px;
       text-decoration:none;
       font-weight:600;
       border:0;
+      font-size:15px;
+      transition:transform 0.2s, opacity 0.2s;
+      min-width:140px;
+    }
+    .btn:hover{
+      transform:translateY(-1px);
     }
     .btn.alt{background:#222a36;color:#e6eef6}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .btn.disabled{opacity:0.55;pointer-events:none}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted)}
+    .btn.disabled{opacity:0.4;pointer-events:none;cursor:not-allowed}
+    .btn:not(.disabled):hover{opacity:0.95}
 
-    .notice{margin-top:18px;color:var(--muted);font-size:14px}
-    .error{margin-top:12px;color:#ffb4b4;background:rgba(255,80,80,0.07);padding:10px;border-radius:8px}
+    .notice{margin-top:20px;color:var(--muted);font-size:14px;padding:10px;background:var(--glass);border-radius:8px}
+    .error{
+      margin-top:16px;
+      color:#ffb4b4;
+      background:rgba(255,80,80,0.07);
+      padding:14px;
+      border-radius:8px;
+      border:1px solid rgba(255,80,80,0.2);
+      font-size:14px;
+    }
 
-    footer.footer{padding:18px;color:var(--muted);font-size:13px; width:100%; max-width:var(--max-width);}
+    footer.footer{
+      padding:20px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+      border-top:1px solid rgba(255,255,255,0.03);
+      margin-top:30px;
+    }
 
     /* Sidebar */
     .sidebar{
       position:fixed;
-      right:12px;
-      top:24px;
+      right:0;
+      top:0;
+      bottom:0;
       width:var(--sidebar-width);
-      padding:12px;
+      padding:20px 16px;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
+      border-left:1px solid rgba(255,255,255,0.04);
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:16px;
       align-items:flex-start;
-      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      overflow-y:auto;
+      z-index:100;
     }
     .dev-toggle{
       width:100%;
       text-align:left;
-      padding:8px 10px;
+      padding:10px 12px;
       border-radius:8px;
       background:transparent;
-      border:1px solid rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
       color:var(--muted);
       font-weight:600;
+      font-size:14px;
+      cursor:pointer;
+      transition:background 0.2s;
     }
-    .dev-list{display:flex;flex-direction:column;gap:12px;width:100%}
-    .dev{display:flex;gap:10px;align-items:center}
-    .dev img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
-    .dev-name{font-weight:700}
-    .dev-role{color:var(--muted);font-size:13px}
-    .dev-bio{color:var(--muted);font-size:12px;margin-top:4px}
-    .dev-link{color:var(--muted);font-size:13px;text-decoration:none;margin-top:6px;display:inline-block}
+    .dev-toggle:hover{
+      background:rgba(255,255,255,0.03);
+    }
+    .dev-list{display:flex;flex-direction:column;gap:16px;width:100%}
+    .dev{display:flex;gap:12px;align-items:flex-start}
+    .dev img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
+    .dev-name{font-weight:700;font-size:15px}
+    .dev-role{color:var(--accent);font-size:13px;margin-top:2px}
+    .dev-bio{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.4}
 
     /* Utility classes */
     .hidden{display:none!important}
     .loading{opacity:0.6;pointer-events:none}
 
+    /* Image gallery */
+    .images-list{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .image-item{
+      display:inline-block;
+      margin:5px;
+      text-align:center;
+    }
+
     /* small screens */
-    @media (max-width:900px){
-      body{padding-right:12px}
-      .cover{width:100%;height:200px}
+    @media (max-width:1100px){
+      body{padding-right:0}
+      .sidebar{
+        position:static;
+        width:100%;
+        height:auto;
+        margin-top:30px;
+        border-left:none;
+        border-top:1px solid rgba(255,255,255,0.04);
+        padding:16px;
+      }
+      .dev-list{flex-direction:row}
+      .dev{flex-direction:column;align-items:center;text-align:center;flex:1}
+      .dev img{width:80px;height:80px}
+    }
+
+    @media (max-width:768px){
+      .container{padding:16px}
+      .card{padding:20px}
+      .input-row{flex-direction:column}
+      #fetchBtn{width:100%}
       .result{flex-direction:column}
-      .result-left{width:100%}
-      .sidebar{position:static;width:100%;flex-direction:row;justify-content:space-between;padding:8px;margin-top:18px}
-      .dev-list{flex-direction:row;gap:8px}
-      .dev{flex-direction:column;align-items:center}
+      .cover{width:100%;height:240px}
+      .stats > div{flex:1;min-width:calc(50% - 14px)}
+      .actions{flex-direction:column}
+      .btn{width:100%;justify-content:center}
+      .dev-list{flex-direction:column}
     }
   </style>
 </head>
@@ -190,14 +276,19 @@
         <section class="search" aria-labelledby="search-label">
           <label id="search-label" for="tiktokUrl">Paste TikTok URL</label>
           <div class="input-row">
-            <input id="tiktokUrl" type="url" placeholder="https://vm.tiktok.com/..." />
+            <input 
+              id="tiktokUrl" 
+              type="url" 
+              placeholder="https://vm.tiktok.com/..." 
+              autocomplete="off"
+              autofocus
+            />
             <button id="fetchBtn" aria-label="Fetch">Fetch</button>
-            <button id="exampleBtn" class="btn ghost" title="Use example">Example</button>
           </div>
-          <p id="hint" class="hint">Example: https://vm.tiktok.com/… or https://www.tiktok.com/@username/video/1234567890</p>
+          <p class="hint">Supports: vm.tiktok.com, vt.tiktok.com, www.tiktok.com</p>
         </section>
 
-        <section id="notice" class="notice" aria-live="polite"></section>
+        <section id="notice" class="notice hidden" aria-live="polite"></section>
 
         <section id="resultWrapper" class="result hidden" aria-live="polite">
           <div class="result-left">
@@ -205,7 +296,7 @@
           </div>
 
           <div class="result-right">
-            <h2 id="title"></h2>
+            <h2 id="title" style="margin:0 0 12px 0;font-size:20px;line-height:1.4"></h2>
 
             <div class="meta">
               <img id="authorAvatar" class="avatar" src="" alt="Author avatar" />
@@ -215,15 +306,16 @@
               </div>
             </div>
 
-            <div class="stats" aria-hidden="false">
-              <div><strong>Play</strong><br/><span id="play">-</span></div>
-              <div><strong>Like</strong><br/><span id="like">-</span></div>
-              <div><strong>Comment</strong><br/><span id="comment">-</span></div>
-              <div><strong>Share</strong><br/><span id="share">-</span></div>
+            <div class="stats">
+              <div><strong>PLAYS</strong><span id="play">-</span></div>
+              <div><strong>LIKES</strong><span id="like">-</span></div>
+              <div><strong>COMMENTS</strong><span id="comment">-</span></div>
+              <div><strong>SHARES</strong><span id="share">-</span></div>
             </div>
 
-            <div id="musicInfo" class="music-info hidden">
-              <strong>Music:</strong> <span id="musicTitle"></span> by <span id="musicAuthor"></span>
+            <div id="musicInfo" class="hidden" style="margin:16px 0;padding:12px;background:var(--glass);border-radius:8px">
+              <strong style="display:block;margin-bottom:4px;color:var(--accent)">MUSIC</strong>
+              <div><span id="musicTitle"></span> by <span id="musicAuthor"></span></div>
             </div>
 
             <p class="created" id="create_at"></p>
@@ -235,7 +327,7 @@
             </div>
 
             <div id="imagesWrapper" class="hidden">
-              <h3>Images (Album)</h3>
+              <h3 style="margin:20px 0 12px 0">Images (Album)</h3>
               <div id="imagesList" class="images-list"></div>
             </div>
 
@@ -246,32 +338,30 @@
     </main>
 
     <footer class="footer">
-      <small>AJ MEDIA DOWNLOADER — Powered by TikWM API.</small>
+      <small>AJ MEDIA DOWNLOADER — TikTok Video & Audio Downloader</small>
     </footer>
   </div>
 
-  <!-- Sidebar (always included) -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <button id="devToggle" class="dev-toggle" aria-expanded="true">Developers</button>
 
-    <div id="devList" class="dev-list" aria-live="polite">
-      <div class="dev" title="AJ — Front End">
-        <img src="https://github.com/Itzpatron.png" alt="AJ avatar" />
+    <div id="devList" class="dev-list">
+      <div class="dev">
+        <img src="https://ui-avatars.com/api/?name=AJ&background=ff5f6d&color=fff&size=120" alt="AJ avatar" />
         <div>
           <div class="dev-name">AJ</div>
-          <div class="dev-role">Front End</div>
-          <div class="dev-bio">Builds the UI and front-end experience.</div>
-          <a class="dev-link" href="https://github.com/Itzpatron" target="_blank" rel="noopener">github.com/Itzpatron</a>
+          <div class="dev-role">Frontend Developer</div>
+          <div class="dev-bio">Designs and builds user interfaces for seamless experiences.</div>
         </div>
       </div>
 
-      <div class="dev" title="Uthuman — Back End">
-        <img src="https://github.com/VerknDev.png" alt="Uthuman avatar" />
+      <div class="dev">
+        <img src="https://ui-avatars.com/api/?name=Uthuman&background=222a36&color=fff&size=120" alt="Uthuman avatar" />
         <div>
           <div class="dev-name">Uthuman</div>
-          <div class="dev-role">Back End</div>
-          <div class="dev-bio">API and server-side logic.</div>
-          <a class="dev-link" href="https://github.com/VerknDev" target="_blank" rel="noopener">github.com/VerknDev</a>
+          <div class="dev-role">Backend Developer</div>
+          <div class="dev-bio">Handles API integration and server-side functionality.</div>
         </div>
       </div>
     </div>
@@ -280,7 +370,6 @@
   <script>
     // Elements
     const fetchBtn = document.getElementById('fetchBtn');
-    const exampleBtn = document.getElementById('exampleBtn');
     const tiktokUrlInput = document.getElementById('tiktokUrl');
     const resultWrapper = document.getElementById('resultWrapper');
     const coverEl = document.getElementById('cover');
@@ -303,7 +392,6 @@
     const musicAuthorEl = document.getElementById('musicAuthor');
     const imagesWrapper = document.getElementById('imagesWrapper');
     const imagesList = document.getElementById('imagesList');
-
     const devToggle = document.getElementById('devToggle');
     const devList = document.getElementById('devList');
 
@@ -311,12 +399,14 @@
     devToggle.addEventListener('click', () => {
       const hidden = devList.classList.toggle('hidden');
       devToggle.setAttribute('aria-expanded', String(!hidden));
+      devToggle.textContent = hidden ? 'Show Developers' : 'Hide Developers';
     });
 
     // Utility functions
     function showError(msg) {
       errorEl.textContent = msg;
       errorEl.classList.remove('hidden');
+      noticeEl.classList.add('hidden');
     }
 
     function clearError() {
@@ -324,14 +414,21 @@
       errorEl.classList.add('hidden');
     }
 
-    function setNotice(msg) {
-      noticeEl.textContent = msg || '';
+    function setNotice(msg, isError = false) {
+      if (!msg) {
+        noticeEl.classList.add('hidden');
+        return;
+      }
+      noticeEl.textContent = msg;
+      noticeEl.style.color = isError ? '#ffb4b4' : 'var(--muted)';
+      noticeEl.style.background = isError ? 'rgba(255,80,80,0.07)' : 'var(--glass)';
+      noticeEl.classList.remove('hidden');
     }
 
     function showLoading(show) {
       fetchBtn.classList.toggle('loading', show);
       fetchBtn.disabled = show;
-      fetchBtn.textContent = show ? 'Loading...' : 'Fetch';
+      fetchBtn.textContent = show ? 'Fetching...' : 'Fetch';
     }
 
     function resetResult() {
@@ -355,6 +452,7 @@
       imagesWrapper.classList.add('hidden');
       imagesList.innerHTML = '';
       resultWrapper.classList.add('hidden');
+      clearError();
     }
 
     function enableLink(el, href, filename) {
@@ -366,18 +464,20 @@
 
     function formatNumber(num) {
       if (!num || isNaN(num)) return '0';
-      return Number(num).toLocaleString();
+      const n = Number(num);
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n.toLocaleString();
     }
 
-    // SIMPLE FIX: Direct API call without proxy
+    // TikTok API function
     async function fetchTikTokData(fullUrl) {
-      // Use direct API call to tikwm.com
+      // Use a reliable API endpoint
       const apiUrl = `https://tikwm.com/api/?url=${encodeURIComponent(fullUrl)}`;
       
       try {
         const res = await fetch(apiUrl, {
           method: 'GET',
-          mode: 'cors',
           headers: {
             'Accept': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -390,7 +490,6 @@
         
         const data = await res.json();
         
-        // Transform data to match our expected format
         if (!data.data) {
           throw new Error('No data received from API');
         }
@@ -400,7 +499,11 @@
           result: {
             title: data.data.title || 'No title',
             cover: data.data.cover || '',
-            create_at: data.data.create_time ? new Date(data.data.create_time * 1000).toLocaleString() : '',
+            create_at: data.data.create_time ? new Date(data.data.create_time * 1000).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }) : '',
             stats: {
               play: formatNumber(data.data.play_count),
               like: formatNumber(data.data.digg_count),
@@ -422,15 +525,14 @@
           }
         };
       } catch (error) {
-        // Fallback: Try using a CORS proxy
         console.log('Direct API failed, trying CORS proxy...');
         
-        // Use a public CORS proxy
-        const proxyUrl = `https://api.codetabs.com/v1/proxy/?quest=https://tikwm.com/api/?url=${encodeURIComponent(fullUrl)}`;
+        // Fallback with CORS proxy
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://tikwm.com/api/?url=${fullUrl}`)}`;
         
         const proxyRes = await fetch(proxyUrl);
         if (!proxyRes.ok) {
-          throw new Error('Failed to fetch from API. Please try a different URL or check your connection.');
+          throw new Error('Failed to fetch from API. Please check the URL and try again.');
         }
         
         const proxyData = await proxyRes.json();
@@ -444,7 +546,11 @@
           result: {
             title: proxyData.data.title || 'No title',
             cover: proxyData.data.cover || '',
-            create_at: proxyData.data.create_time ? new Date(proxyData.data.create_time * 1000).toLocaleString() : '',
+            create_at: proxyData.data.create_time ? new Date(proxyData.data.create_time * 1000).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }) : '',
             stats: {
               play: formatNumber(proxyData.data.play_count),
               like: formatNumber(proxyData.data.digg_count),
@@ -473,20 +579,21 @@
       setNotice('');
       resetResult();
 
-      const url = (tiktokUrlInput.value || '').trim();
+      const url = tiktokUrlInput.value.trim();
       if (!url) {
         showError('Please paste a TikTok URL first.');
         return;
       }
 
       if (!url.includes('tiktok.com')) {
-        showError('Please enter a valid TikTok URL.');
+        showError('Please enter a valid TikTok URL (vm.tiktok.com, vt.tiktok.com, or www.tiktok.com)');
         return;
       }
 
       showLoading(true);
       titleEl.textContent = 'Loading...';
       resultWrapper.classList.remove('hidden');
+      setNotice('Fetching TikTok data...');
 
       try {
         const json = await fetchTikTokData(url);
@@ -521,7 +628,7 @@
         }
         
         if (r.create_at) {
-          createAtEl.textContent = 'Created: ' + r.create_at;
+          createAtEl.textContent = 'Posted: ' + r.create_at;
         }
 
         // Music info
@@ -531,7 +638,7 @@
           musicInfoEl.classList.remove('hidden');
         }
 
-        const safeTitle = (r.title || 'tiktok').replace(/[^\w\s\-]/g, '').slice(0, 60).replace(/\s+/g, '_');
+        const safeTitle = (r.title || 'tiktok_video').replace(/[^\w\s\-]/g, '').slice(0, 50).replace(/\s+/g, '_');
 
         // Video download
         if (r.videoUrl) {
@@ -567,30 +674,21 @@
             imagesList.appendChild(imgDiv);
           });
           
-          // Hide video download if it's an image album
           if (!r.videoUrl) {
             downloadVideo.style.display = 'none';
             openVideo.style.display = 'none';
           }
         }
 
-        setNotice('Successfully fetched TikTok data! Click the buttons to download.');
+        setNotice('Success! Click the download buttons to save.');
       } catch (err) {
         console.error('Fetch error:', err);
-        showError('Error: ' + (err.message || 'Failed to fetch data. Please try a different URL or check your connection.'));
+        showError('Error: ' + (err.message || 'Failed to fetch data. Please check the URL and try again.'));
         resetResult();
       } finally {
         showLoading(false);
       }
     }
-
-    // Example button prefill - WORKING EXAMPLE
-    exampleBtn.addEventListener('click', () => {
-      // Use a known working TikTok URL
-      const exampleUrl = 'https://www.tiktok.com/@tiktok/video/7106681361842048302';
-      tiktokUrlInput.value = exampleUrl;
-      onFetchClicked();
-    });
 
     // Event listeners
     fetchBtn.addEventListener('click', onFetchClicked);
@@ -601,13 +699,13 @@
     // Auto-focus input
     tiktokUrlInput.focus();
 
-    // Check if running as file:// and show notice
+    // Check if running as file://
     if (location.protocol === 'file:') {
-      setNotice('Running as local file. Some features may require a web server due to CORS restrictions.');
+      setNotice('For best results, run this from a web server or use HTTPS.', true);
     }
 
-    // Test the API on load
-    console.log('TikTok Downloader initialized');
+    // Initialize
+    console.log('TikTok Downloader ready');
   </script>
 </body>
 </html>
