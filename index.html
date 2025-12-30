@@ -1,189 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AJ MEDIA DOWNLOADER - TikTok Video Downloader</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/tiktok.png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AJ MEDIA DOWNLOADER</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-    <!-- Sidebar Toggle Button -->
-    <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-    </button>
+  <header class="header">
+    <div class="brand">
+      <h1>AJ MEDIA DOWNLOADER</h1>
+      <p class="tag">Download TikTok videos (MP4) and audio (MP3)</p>
+    </div>
+  </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-container">
-                <i class="fas fa-download logo-icon"></i>
-                <h1 class="logo-text">AJ MEDIA<br>DOWNLOADER</h1>
-            </div>
-            
-            <div class="header-right">
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </header>
+  <main class="main">
+    <section class="search">
+      <label for="tiktokUrl">Paste TikTok URL</label>
+      <div class="input-row">
+        <input id="tiktokUrl" type="url" placeholder="https://vm.tiktok.com/..." />
+        <button id="fetchBtn">Fetch</button>
+      </div>
+      <p id="hint" class="hint">Example: https://vm.tiktok.com/…</p>
+    </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Hero Section -->
-            <section class="hero">
-                <h2>Download TikTok Videos Without Watermark</h2>
-                <p>Paste TikTok URL and get HD quality video & audio downloads instantly</p>
-            </section>
+    <section id="result" class="result hidden">
+      <div class="result-left">
+        <img id="cover" class="cover" src="" alt="cover" />
+      </div>
+      <div class="result-right">
+        <h2 id="title"></h2>
+        <div class="meta">
+          <img id="authorAvatar" class="avatar" src="" alt="author avatar" />
+          <div>
+            <div id="authorName" class="authorName"></div>
+            <div id="authorUsername" class="authorUsername"></div>
+          </div>
+        </div>
 
-            <!-- Input Section -->
-            <section class="input-section">
-                <div class="input-container">
-                    <div class="input-group">
-                        <i class="fas fa-link input-icon"></i>
-                        <input type="url" class="url-input" id="urlInput" 
-                               placeholder="Paste TikTok URL here (e.g., https://vm.tiktok.com/ZSHKoXJsb6rmS-QB4FY/)">
-                        <button class="download-btn" id="fetchBtn">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    </div>
-                    <p class="input-hint">
-                        <i class="fas fa-info-circle"></i> Supports all TikTok links: video links, share links, and mobile links
-                    </p>
-                </div>
-            </section>
+        <div class="stats">
+          <div><strong>Play</strong><br/><span id="play"></span></div>
+          <div><strong>Like</strong><br/><span id="like"></span></div>
+          <div><strong>Comment</strong><br/><span id="comment"></span></div>
+          <div><strong>Share</strong><br/><span id="share"></span></div>
+        </div>
 
-            <!-- Error Message -->
-            <div class="error-message" id="errorMessage">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="errorText">An error occurred. Please check the URL and try again.</span>
-            </div>
+        <p class="created" id="create_at"></p>
 
-            <!-- Loading Spinner -->
-            <div class="loading-container" id="loadingSpinner">
-                <div class="spinner"></div>
-                <p>Fetching video information from TikTok...</p>
-            </div>
+        <div class="actions">
+          <a id="downloadVideo" class="btn" target="_blank" rel="noopener">Download MP4</a>
+          <a id="downloadAudio" class="btn alt" target="_blank" rel="noopener">Download MP3</a>
+          <button id="openVideo" class="btn ghost">Open Video</button>
+        </div>
 
-            <!-- Results Section -->
-            <section class="results-section" id="resultsSection">
-                <div class="results-header">
-                    <h3><i class="fas fa-video"></i> Video Details</h3>
-                </div>
+        <div id="error" class="error hidden"></div>
+      </div>
+    </section>
 
-                <div class="video-content">
-                    <!-- Video Preview -->
-                    <div class="video-preview">
-                        <div class="video-wrapper">
-                            <img id="videoThumbnail" src="" alt="Video Thumbnail" class="video-thumbnail">
-                            <div class="play-overlay" id="playOverlay">
-                                <i class="fas fa-play"></i>
-                                <span>Click to preview</span>
-                            </div>
-                            <video id="videoPlayer" class="video-player" controls>
-                                <source id="videoSource" src="" type="video/mp4">
-                                Your browser doesn't support HTML5 video.
-                            </video>
-                        </div>
-                    </div>
+    <section id="notice" class="notice">
+      <p>If downloads do not start, open the link in a new tab or use the serverless proxy (provided) — recommended for Vercel deployments.</p>
+    </section>
+  </main>
 
-                    <!-- Video Details -->
-                    <div class="video-details">
-                        <h2 class="video-title" id="videoTitle"></h2>
-                        
-                        <!-- Stats -->
-                        <div class="stats-container" id="statsContainer">
-                            <!-- Stats will be populated by JavaScript -->
-                        </div>
-
-                        <!-- Author Info -->
-                        <div class="author-container">
-                            <div class="author-header">
-                                <h4><i class="fas fa-user"></i> Author</h4>
-                            </div>
-                            <div class="author-content">
-                                <img id="authorAvatar" src="" alt="Author" class="author-avatar">
-                                <div class="author-info">
-                                    <h3 id="authorName"></h3>
-                                    <p class="author-username" id="authorUsername"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Music Info -->
-                        <div class="music-container">
-                            <div class="music-header">
-                                <h4><i class="fas fa-music"></i> Music</h4>
-                            </div>
-                            <div class="music-content">
-                                <div class="music-icon">
-                                    <i class="fas fa-headphones"></i>
-                                </div>
-                                <div class="music-details">
-                                    <h4 id="musicTitle"></h4>
-                                    <p id="musicAuthor"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Creation Date -->
-                        <div class="date-container">
-                            <p><i class="far fa-calendar-alt"></i> Created: <span id="createDate"></span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Download Buttons -->
-                <div class="download-section">
-                    <h3><i class="fas fa-download"></i> Download Options</h3>
-                    <div class="download-buttons">
-                        <a href="#" class="download-btn-large video-btn" id="videoDownloadBtn">
-                            <div class="btn-icon">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div class="btn-text">
-                                <span class="btn-title">Download Video</span>
-                                <span class="btn-subtitle">MP4 • HD Quality • No Watermark</span>
-                            </div>
-                            <i class="fas fa-arrow-down btn-arrow"></i>
-                        </a>
-                        
-                        <a href="#" class="download-btn-large audio-btn" id="audioDownloadBtn">
-                            <div class="btn-icon">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <div class="btn-text">
-                                <span class="btn-title">Download Audio</span>
-                                <span class="btn-subtitle">MP3 • High Quality • Music Only</span>
-                            </div>
-                            <i class="fas fa-arrow-down btn-arrow"></i>
-                        </a>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <i class="fas fa-download"></i>
-                    <span>AJ MEDIA DOWNLOADER</span>
-                </div>
-                <p class="copyright">&copy; 2025 All rights reserved. Made with <i class="fas fa-heart"></i> by AJ Abudal & Uthuman</p>
-                <p class="disclaimer">This tool is for personal use only. Please respect content creators' rights.</p>
-            </div>
-        </footer>
+  <aside class="sidebar">
+    <div class="dev">
+      <img src="https://github.com/Itzpatron.png" alt="AJ" />
+      <div>
+        <div class="dev-name">AJ</div>
+        <div class="dev-role">Front End</div>
+      </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar" id="sidebar">
-        <!-- Sidebar content will be loaded here -->
-    </aside>
+    <div class="dev">
+      <img src="https://github.com/VerknDev.png" alt="Uthuman" />
+      <div>
+        <div class="dev-name">Uthuman</div>
+        <div class="dev-role">Back End</div>
+      </div>
+    </div>
+  </aside>
 
-    <script src="app.js"></script>
+  <footer class="footer">
+    <small>AJ MEDIA DOWNLOADER — built for quick TikTok downloads. Powered by VeronDev API.</small>
+  </footer>
+
+  <script src="/script.js"></script>
 </body>
 </html>
