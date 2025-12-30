@@ -317,13 +317,11 @@
     function showError(msg) {
       errorEl.textContent = msg;
       errorEl.classList.remove('hidden');
-      errorEl.style.display = 'block';
     }
 
     function clearError() {
       errorEl.textContent = '';
       errorEl.classList.add('hidden');
-      errorEl.style.display = 'none';
     }
 
     function setNotice(msg) {
@@ -371,35 +369,103 @@
       return Number(num).toLocaleString();
     }
 
-    // Updated fetch function using the TikWM API via our proxy
+    // SIMPLE FIX: Direct API call without proxy
     async function fetchTikTokData(fullUrl) {
-      // Use relative path for Vercel deployment or local server
-      // In production, this will be /api/tiktok
-      // For local development with server.js, use /api/tiktok
-      // For direct file access, use the proxy endpoint
-      let apiUrl;
+      // Use direct API call to tikwm.com
+      const apiUrl = `https://tikwm.com/api/?url=${encodeURIComponent(fullUrl)}`;
       
-      if (window.location.hostname === 'localhost' || window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-        // Running on a server (local or production)
-        apiUrl = '/api/tiktok?url=' + encodeURIComponent(fullUrl);
-      } else {
-        // Running as file:// or need direct API
-        // You can change this to your deployed API endpoint
-        apiUrl = 'https://tiktok-downloader-proxy.vercel.app/api/tiktok?url=' + encodeURIComponent(fullUrl);
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+        
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        
+        // Transform data to match our expected format
+        if (!data.data) {
+          throw new Error('No data received from API');
+        }
+        
+        return {
+          success: true,
+          result: {
+            title: data.data.title || 'No title',
+            cover: data.data.cover || '',
+            create_at: data.data.create_time ? new Date(data.data.create_time * 1000).toLocaleString() : '',
+            stats: {
+              play: formatNumber(data.data.play_count),
+              like: formatNumber(data.data.digg_count),
+              comment: formatNumber(data.data.comment_count),
+              share: formatNumber(data.data.share_count)
+            },
+            music_info: {
+              title: data.data.music_info?.title || '',
+              author: data.data.music_info?.author || ''
+            },
+            author: {
+              name: data.data.author?.nickname || '',
+              username: data.data.author?.unique_id ? '@' + data.data.author.unique_id : '',
+              avatar: data.data.author?.avatar || ''
+            },
+            musicUrl: data.data.music || '',
+            videoUrl: data.data.images ? null : data.data.play,
+            images: data.data.images || null
+          }
+        };
+      } catch (error) {
+        // Fallback: Try using a CORS proxy
+        console.log('Direct API failed, trying CORS proxy...');
+        
+        // Use a public CORS proxy
+        const proxyUrl = `https://api.codetabs.com/v1/proxy/?quest=https://tikwm.com/api/?url=${encodeURIComponent(fullUrl)}`;
+        
+        const proxyRes = await fetch(proxyUrl);
+        if (!proxyRes.ok) {
+          throw new Error('Failed to fetch from API. Please try a different URL or check your connection.');
+        }
+        
+        const proxyData = await proxyRes.json();
+        
+        if (!proxyData.data) {
+          throw new Error('No data received from API');
+        }
+        
+        return {
+          success: true,
+          result: {
+            title: proxyData.data.title || 'No title',
+            cover: proxyData.data.cover || '',
+            create_at: proxyData.data.create_time ? new Date(proxyData.data.create_time * 1000).toLocaleString() : '',
+            stats: {
+              play: formatNumber(proxyData.data.play_count),
+              like: formatNumber(proxyData.data.digg_count),
+              comment: formatNumber(proxyData.data.comment_count),
+              share: formatNumber(proxyData.data.share_count)
+            },
+            music_info: {
+              title: proxyData.data.music_info?.title || '',
+              author: proxyData.data.music_info?.author || ''
+            },
+            author: {
+              name: proxyData.data.author?.nickname || '',
+              username: proxyData.data.author?.unique_id ? '@' + proxyData.data.author.unique_id : '',
+              avatar: proxyData.data.author?.avatar || ''
+            },
+            musicUrl: proxyData.data.music || '',
+            videoUrl: proxyData.data.images ? null : proxyData.data.play,
+            images: proxyData.data.images || null
+          }
+        };
       }
-      
-      const res = await fetch(apiUrl, {
-        method: 'GET',
-        mode: 'cors',
-        cache: 'no-cache'
-      });
-      
-      if (!res.ok) {
-        const txt = await res.text().catch(() => null);
-        throw new Error(`API error: ${res.status}${txt ? ': ' + txt : ''}`);
-      }
-      
-      return await res.json();
     }
 
     async function onFetchClicked() {
@@ -426,19 +492,22 @@
         const json = await fetchTikTokData(url);
 
         if (!json || !json.success || !json.result) {
-          throw new Error(json?.error || 'Invalid response from API');
+          throw new Error('Invalid response from API');
         }
 
         const r = json.result;
         
         // Set basic info
-        coverEl.src = r.cover || '';
-        coverEl.alt = r.title || 'Video cover';
+        if (r.cover) {
+          coverEl.src = r.cover;
+          coverEl.alt = r.title || 'Video cover';
+        }
+        
         titleEl.textContent = r.title || 'No title';
         
         // Author info
         if (r.author) {
-          authorAvatarEl.src = r.author.avatar || '';
+          if (r.author.avatar) authorAvatarEl.src = r.author.avatar;
           authorNameEl.textContent = r.author.name || '';
           authorUsernameEl.textContent = r.author.username || '';
         }
@@ -451,7 +520,9 @@
           shareEl.textContent = r.stats.share || '0';
         }
         
-        createAtEl.textContent = r.create_at || '';
+        if (r.create_at) {
+          createAtEl.textContent = 'Created: ' + r.create_at;
+        }
 
         // Music info
         if (r.music_info && r.music_info.title) {
@@ -465,7 +536,9 @@
         // Video download
         if (r.videoUrl) {
           enableLink(downloadVideo, r.videoUrl, safeTitle + '.mp4');
-          openVideo.onclick = () => window.open(r.videoUrl, '_blank', 'noopener');
+          openVideo.onclick = () => {
+            window.open(r.videoUrl, '_blank', 'noopener');
+          };
           openVideo.disabled = false;
         } else {
           downloadVideo.classList.add('disabled');
@@ -485,9 +558,10 @@
           imagesList.innerHTML = '';
           r.images.forEach((imgUrl, index) => {
             const imgDiv = document.createElement('div');
-            imgDiv.className = 'image-item';
+            imgDiv.style.cssText = 'display: inline-block; margin: 5px; text-align: center;';
             imgDiv.innerHTML = `
-              <img src="${imgUrl}" alt="Image ${index + 1}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin: 5px;">
+              <img src="${imgUrl}" alt="Image ${index + 1}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 5px;">
+              <br>
               <a href="${imgUrl}" download="${safeTitle}_image_${index + 1}.jpg" class="btn ghost" style="font-size: 12px; padding: 5px 8px;">Download</a>
             `;
             imagesList.appendChild(imgDiv);
@@ -500,34 +574,21 @@
           }
         }
 
-        setNotice('Successfully fetched TikTok data!');
+        setNotice('Successfully fetched TikTok data! Click the buttons to download.');
       } catch (err) {
-        const message = err.message || String(err);
-        
-        if (message.includes('CORS') || message.includes('Failed to fetch') || message.includes('NetworkError')) {
-          showError('Network error. If running locally, make sure the server is running. If deployed, check API endpoint.');
-          setNotice('For local development: Run "npm start" in terminal and open http://localhost:3000');
-        } else if (message.includes('API error: 429')) {
-          showError('API rate limit exceeded. Please try again in a few minutes.');
-        } else {
-          showError('Error: ' + message);
-        }
-        
+        console.error('Fetch error:', err);
+        showError('Error: ' + (err.message || 'Failed to fetch data. Please try a different URL or check your connection.'));
         resetResult();
       } finally {
         showLoading(false);
       }
     }
 
-    // Example button prefill
+    // Example button prefill - WORKING EXAMPLE
     exampleBtn.addEventListener('click', () => {
-      const examples = [
-        'https://vm.tiktok.com/ZSNq1KD75/',
-        'https://www.tiktok.com/@tiktok/video/7106681361842048302',
-        'https://vt.tiktok.com/ZSNq1bBxT/'
-      ];
-      const randomExample = examples[Math.floor(Math.random() * examples.length)];
-      tiktokUrlInput.value = randomExample;
+      // Use a known working TikTok URL
+      const exampleUrl = 'https://www.tiktok.com/@tiktok/video/7106681361842048302';
+      tiktokUrlInput.value = exampleUrl;
       onFetchClicked();
     });
 
@@ -542,50 +603,11 @@
 
     // Check if running as file:// and show notice
     if (location.protocol === 'file:') {
-      setNotice('Running as local file. For full functionality, run "npm start" in terminal and open http://localhost:3000');
-      
-      // Update API URL for file:// protocol
-      window.fetchTikTokData = async function(fullUrl) {
-        // Use a public CORS proxy as fallback for file://
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-        const apiUrl = 'https://tikwm.com/api/?url=' + encodeURIComponent(fullUrl);
-        
-        try {
-          const res = await fetch(proxyUrl + encodeURIComponent(apiUrl));
-          if (!res.ok) throw new Error('Proxy error');
-          const data = await res.json();
-          
-          return {
-            success: true,
-            result: {
-              title: data.data.title,
-              cover: data.data.cover,
-              create_at: new Date(data.data.create_time * 1000).toLocaleString(),
-              stats: {
-                play: formatNumber(data.data.play_count),
-                like: formatNumber(data.data.digg_count),
-                comment: formatNumber(data.data.comment_count),
-                share: formatNumber(data.data.share_count)
-              },
-              music_info: {
-                title: data.data.music_info.title,
-                author: data.data.music_info.author
-              },
-              author: {
-                name: data.data.author.nickname,
-                username: '@' + data.data.author.unique_id,
-                avatar: data.data.author.avatar
-              },
-              musicUrl: data.data.music,
-              videoUrl: data.data.images ? null : data.data.play,
-              images: data.data.images || null
-            }
-          };
-        } catch (error) {
-          throw new Error('Please run the local server for full functionality');
-        }
-      };
+      setNotice('Running as local file. Some features may require a web server due to CORS restrictions.');
     }
+
+    // Test the API on load
+    console.log('TikTok Downloader initialized');
   </script>
 </body>
 </html>
