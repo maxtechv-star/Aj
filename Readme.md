@@ -1,41 +1,40 @@
 # AJ MEDIA DOWNLOADER
 
-Simple static site to fetch TikTok metadata and provide MP4 and MP3 download links using the Veron API.
+Quick notes to get you running.
 
-What it does
-- Accepts a TikTok URL
-- Calls a serverless proxy endpoint (/api/tiktok) which forwards the request to:
-  `https://veron-apis.zone.id/downloader/tiktok?url=...`
-- Displays cover, title, author, stats
-- Shows "Download MP4" and "Download MP3" buttons (links to returned `videoUrl` and `musicUrl`)
+Two deployment options
 
-Files
-- `index.html` — site UI
-- `styles.css` — styling
-- `script.js` — fetch + UI logic
-- `api/tiktok.js` — Vercel serverless proxy endpoint (recommended to avoid CORS issues)
+1) Deploy to Vercel (recommended)
+- Put all files in the project root and the `api/tiktok.js` file in `/api`.
+- Import the GitHub repo into Vercel — Vercel will deploy the static site and the serverless function automatically.
+- The site will call `/api/tiktok?url=...` (server-side) to avoid CORS.
 
-Deploying to Vercel
-1. Create a repository and push these files to it (root).
-2. In Vercel dashboard, import the Git repository and deploy (Vercel will pick up the static site plus the `/api` serverless function).
-   - OR use the Vercel CLI:
-     - `npm i -g vercel`
-     - `vercel` (follow prompts)
-     - `vercel --prod` to deploy production
-3. Visit the deployed URL. Paste a TikTok URL and click Fetch.
+2) Run locally with Node (optional)
+- Requires Node >= 14 (but recommended Node 16+).
+- Commands:
+  - npm install
+  - npm start
+- Open http://localhost:3000 in your browser.
 
-Notes & troubleshooting
-- CORS: calling the Veron API directly from the browser may be blocked depending on that API's CORS policy. The included serverless function (`/api/tiktok`) proxies requests server-side on Vercel and avoids CORS issues.
-- If the API changes, the UI expects the JSON structure you provided (result.videoUrl and result.musicUrl). Update `script.js` if the response keys differ.
-- Browser download limitations: some browsers prevent cross-origin downloads with the `download` attribute. If clicking "Download" doesn't save automatically, right-click the button and "Open in new tab" or use "Save as..." on the opened media.
-- No credentials required for this flow (your sample API didn't require keys). If a key becomes required later, you can store it as a Vercel Environment Variable and add it to `api/tiktok.js`.
+Important debugging tips (why CSS or fetch might fail)
+- CSS not loading:
+  - Check browser DevTools Network tab for 404 on styles.css. Ensure styles.css is in the same folder as index.html or adjust the href.
+  - If you open index.html directly with file://, the fetch proxy and serverless functions won't work. Serve via a static server (Express, live-server, or deploy).
+- Fetch not returning results:
+  - If you don't have the serverless function (/api/tiktok), fetch will try the proxy and fail. The client now tries a direct upstream request as fallback but direct calls may be blocked by CORS.
+  - Check console/network for errors and HTTP response codes. If you see CORS errors, deploy the proxy (api/tiktok.js) to Vercel or run the local server.js.
+- Browser download behavior:
+  - The `download` attribute may be ignored for cross-origin URLs. Right-click -> open in new tab if automatic saving doesn't happen.
 
-Developer credits
-- AJ — Front End — avatar: https://github.com/Itzpatron.png
-- Uthuman — Back End — avatar: https://github.com/VerknDev.png
+Developer sidebar
+- The sidebar shows AJ (front end) and Uthuman (back end) with avatars and links to their GitHub profiles.
 
-Enjoy — let me know if you want:
-- A nicer UI (Next.js + Tailwind),
-- Server-side audio conversion (to guarantee MP3 extension),
-- Automatic filename generation improvements,
-- Or GitHub-ready repo with package.json and deploy scripts.
+If you want I can:
+- Convert this into a Next.js + Tailwind project (recommended if you want route handling and better UX).
+- Add server-side MP3 re-encoding so downloads are guaranteed MP3 files with consistent filenames.
+- Create a ready-to-push GitHub repo (I can generate the git commands and a single ZIP).
+- Deploy this for you to Vercel if you give repo access (or I can provide exact steps).
+
+Tell me:
+- Do you want me to prepare a GitHub repo structure and push files (I will give you exact git commands), or
+- Do you want Next.js + Tailwind conversion now?
