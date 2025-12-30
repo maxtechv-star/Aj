@@ -1,1 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AJ MEDIA DOWNLOADER</title>
+  
+  <style>
+    :root{
+      --bg:#071021;
+      --panel:#0b1220;
+      --accent:#ff5f6d;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+      --max-width:980px;
+      color-scheme: dark;
+      --sidebar-width:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071021 0%, #071726 100%);
+      color:#e6eef6;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding-right: calc(var(--sidebar-width) + 24px);
+    }
 
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      padding:20px;
+    }
+
+    header.header{
+      padding:18px 0 6px;
+    }
+    .brand h1{margin:0;font-size:20px;letter-spacing:0.6px}
+    .tag{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    main.main{
+      padding:12px 0 36px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+      padding:18px;
+    }
+
+    .search label{font-size:13px;color:var(--muted)}
+    .input-row{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    input[type="url"]{
+      flex:1;
+      padding:12px 14px;
+      border-radius:10px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.04);
+      color:inherit;
+      outline:none;
+    }
+    button{cursor:pointer}
+    #fetchBtn{
+      padding:10px 14px;
+      border-radius:10px;
+      background:linear-gradient(90deg,var(--accent),#ff8a6f);
+      color:#071021;
+      border:0;
+      font-weight:600;
+    }
+    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+
+    .result{
+      margin-top:18px;
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .cover{
+      width:320px;
+      height:180px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#06111a;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .result-left{flex:0 0 320px}
+    .result-right{flex:1;min-width:0}
+
+    .meta{display:flex;gap:12px;align-items:center;margin-top:8px}
+    .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
+    .authorName{font-weight:700}
+    .authorUsername{color:var(--muted);font-size:13px}
+
+    .stats{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+    .stats > div{background:var(--glass);padding:8px 12px;border-radius:8px;font-size:13px;color:var(--muted)}
+
+    .created{color:var(--muted);margin-top:12px;font-size:13px}
+
+    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .btn{
+      display:inline-block;
+      padding:10px 14px;
+      background:linear-gradient(90deg,var(--accent),#ff8a6f);
+      color:#071021;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+      border:0;
+    }
+    .btn.alt{background:#222a36;color:#e6eef6}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .btn.disabled{opacity:0.55;pointer-events:none}
+
+    .notice{margin-top:18px;color:var(--muted);font-size:14px}
+    .error{margin-top:12px;color:#ffb4b4;background:rgba(255,80,80,0.07);padding:10px;border-radius:8px}
+
+    footer.footer{padding:18px;color:var(--muted);font-size:13px; width:100%; max-width:var(--max-width);}
+
+    /* Sidebar */
+    .sidebar{
+      position:fixed;
+      right:12px;
+      top:24px;
+      width:var(--sidebar-width);
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:flex-start;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+    }
+    .dev-toggle{
+      width:100%;
+      text-align:left;
+      padding:8px 10px;
+      border-radius:8px;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      font-weight:600;
+    }
+    .dev-list{display:flex;flex-direction:column;gap:12px;width:100%}
+    .dev{display:flex;gap:10px;align-items:center}
+    .dev img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
+    .dev-name{font-weight:700}
+    .dev-role{color:var(--muted);font-size:13px}
+    .dev-bio{color:var(--muted);font-size:12px;margin-top:4px}
+    .dev-link{color:var(--muted);font-size:13px;text-decoration:none;margin-top:6px;display:inline-block}
+
+    /* Utility classes */
+    .hidden{display:none!important}
+    .loading{opacity:0.6;pointer-events:none}
+
+    /* small screens */
+    @media (max-width:900px){
+      body{padding-right:12px}
+      .cover{width:100%;height:200px}
+      .result{flex-direction:column}
+      .result-left{width:100%}
+      .sidebar{position:static;width:100%;flex-direction:row;justify-content:space-between;padding:8px;margin-top:18px}
+      .dev-list{flex-direction:row;gap:8px}
+      .dev{flex-direction:column;align-items:center}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <h1>AJ MEDIA DOWNLOADER</h1>
+        <p class="tag">Download TikTok videos (MP4) and audio (MP3)</p>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="card">
+        <section class="search" aria-labelledby="search-label">
+          <label id="search-label" for="tiktokUrl">Paste TikTok URL</label>
+          <div class="input-row">
+            <input id="tiktokUrl" type="url" placeholder="https://vm.tiktok.com/..." />
+            <button id="fetchBtn" aria-label="Fetch">Fetch</button>
+            <button id="exampleBtn" class="btn ghost" title="Use example">Example</button>
+          </div>
+          <p id="hint" class="hint">Example: https://vm.tiktok.com/… or https://www.tiktok.com/@username/video/1234567890</p>
+        </section>
+
+        <section id="notice" class="notice" aria-live="polite"></section>
+
+        <section id="resultWrapper" class="result hidden" aria-live="polite">
+          <div class="result-left">
+            <img id="cover" class="cover" src="" alt="Video cover" />
+          </div>
+
+          <div class="result-right">
+            <h2 id="title"></h2>
+
+            <div class="meta">
+              <img id="authorAvatar" class="avatar" src="" alt="Author avatar" />
+              <div>
+                <div id="authorName" class="authorName"></div>
+                <div id="authorUsername" class="authorUsername"></div>
+              </div>
+            </div>
+
+            <div class="stats" aria-hidden="false">
+              <div><strong>Play</strong><br/><span id="play">-</span></div>
+              <div><strong>Like</strong><br/><span id="like">-</span></div>
+              <div><strong>Comment</strong><br/><span id="comment">-</span></div>
+              <div><strong>Share</strong><br/><span id="share">-</span></div>
+            </div>
+
+            <div id="musicInfo" class="music-info hidden">
+              <strong>Music:</strong> <span id="musicTitle"></span> by <span id="musicAuthor"></span>
+            </div>
+
+            <p class="created" id="create_at"></p>
+
+            <div class="actions">
+              <a id="downloadVideo" class="btn disabled" target="_blank" rel="noopener">Download MP4</a>
+              <a id="downloadAudio" class="btn alt disabled" target="_blank" rel="noopener">Download MP3</a>
+              <button id="openVideo" class="btn ghost" disabled>Open Video</button>
+            </div>
+
+            <div id="imagesWrapper" class="hidden">
+              <h3>Images (Album)</h3>
+              <div id="imagesList" class="images-list"></div>
+            </div>
+
+            <div id="error" class="error hidden" role="status"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <small>AJ MEDIA DOWNLOADER — Powered by TikWM API.</small>
+    </footer>
+  </div>
+
+  <!-- Sidebar (always included) -->
+  <aside class="sidebar" id="sidebar">
+    <button id="devToggle" class="dev-toggle" aria-expanded="true">Developers</button>
+
+    <div id="devList" class="dev-list" aria-live="polite">
+      <div class="dev" title="AJ — Front End">
+        <img src="https://github.com/Itzpatron.png" alt="AJ avatar" />
+        <div>
+          <div class="dev-name">AJ</div>
+          <div class="dev-role">Front End</div>
+          <div class="dev-bio">Builds the UI and front-end experience.</div>
+          <a class="dev-link" href="https://github.com/Itzpatron" target="_blank" rel="noopener">github.com/Itzpatron</a>
+        </div>
+      </div>
+
+      <div class="dev" title="Uthuman — Back End">
+        <img src="https://github.com/VerknDev.png" alt="Uthuman avatar" />
+        <div>
+          <div class="dev-name">Uthuman</div>
+          <div class="dev-role">Back End</div>
+          <div class="dev-bio">API and server-side logic.</div>
+          <a class="dev-link" href="https://github.com/VerknDev" target="_blank" rel="noopener">github.com/VerknDev</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    // Elements
+    const fetchBtn = document.getElementById('fetchBtn');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const tiktokUrlInput = document.getElementById('tiktokUrl');
+    const resultWrapper = document.getElementById('resultWrapper');
+    const coverEl = document.getElementById('cover');
+    const titleEl = document.getElementById('title');
+    const authorAvatarEl = document.getElementById('authorAvatar');
+    const authorNameEl = document.getElementById('authorName');
+    const authorUsernameEl = document.getElementById('authorUsername');
+    const playEl = document.getElementById('play');
+    const likeEl = document.getElementById('like');
+    const commentEl = document.getElementById('comment');
+    const shareEl = document.getElementById('share');
+    const createAtEl = document.getElementById('create_at');
+    const downloadVideo = document.getElementById('downloadVideo');
+    const downloadAudio = document.getElementById('downloadAudio');
+    const openVideo = document.getElementById('openVideo');
+    const errorEl = document.getElementById('error');
+    const noticeEl = document.getElementById('notice');
+    const musicInfoEl = document.getElementById('musicInfo');
+    const musicTitleEl = document.getElementById('musicTitle');
+    const musicAuthorEl = document.getElementById('musicAuthor');
+    const imagesWrapper = document.getElementById('imagesWrapper');
+    const imagesList = document.getElementById('imagesList');
+
+    const devToggle = document.getElementById('devToggle');
+    const devList = document.getElementById('devList');
+
+    // Developer toggle
+    devToggle.addEventListener('click', () => {
+      const hidden = devList.classList.toggle('hidden');
+      devToggle.setAttribute('aria-expanded', String(!hidden));
+    });
+
+    // Utility functions
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+      errorEl.style.display = 'block';
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.classList.add('hidden');
+      errorEl.style.display = 'none';
+    }
+
+    function setNotice(msg) {
+      noticeEl.textContent = msg || '';
+    }
+
+    function showLoading(show) {
+      fetchBtn.classList.toggle('loading', show);
+      fetchBtn.disabled = show;
+      fetchBtn.textContent = show ? 'Loading...' : 'Fetch';
+    }
+
+    function resetResult() {
+      titleEl.textContent = '';
+      coverEl.src = '';
+      coverEl.alt = 'Video cover';
+      authorAvatarEl.src = '';
+      authorNameEl.textContent = '';
+      authorUsernameEl.textContent = '';
+      playEl.textContent = '-';
+      likeEl.textContent = '-';
+      commentEl.textContent = '-';
+      shareEl.textContent = '-';
+      createAtEl.textContent = '';
+      downloadVideo.removeAttribute('href');
+      downloadVideo.classList.add('disabled');
+      downloadAudio.removeAttribute('href');
+      downloadAudio.classList.add('disabled');
+      openVideo.disabled = true;
+      musicInfoEl.classList.add('hidden');
+      imagesWrapper.classList.add('hidden');
+      imagesList.innerHTML = '';
+      resultWrapper.classList.add('hidden');
+    }
+
+    function enableLink(el, href, filename) {
+      if (!el || !href) return;
+      el.href = href;
+      el.classList.remove('disabled');
+      if (filename) el.setAttribute('download', filename);
+    }
+
+    function formatNumber(num) {
+      if (!num || isNaN(num)) return '0';
+      return Number(num).toLocaleString();
+    }
+
+    // Updated fetch function using the TikWM API via our proxy
+    async function fetchTikTokData(fullUrl) {
+      // Use relative path for Vercel deployment or local server
+      // In production, this will be /api/tiktok
+      // For local development with server.js, use /api/tiktok
+      // For direct file access, use the proxy endpoint
+      let apiUrl;
+      
+      if (window.location.hostname === 'localhost' || window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        // Running on a server (local or production)
+        apiUrl = '/api/tiktok?url=' + encodeURIComponent(fullUrl);
+      } else {
+        // Running as file:// or need direct API
+        // You can change this to your deployed API endpoint
+        apiUrl = 'https://tiktok-downloader-proxy.vercel.app/api/tiktok?url=' + encodeURIComponent(fullUrl);
+      }
+      
+      const res = await fetch(apiUrl, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache'
+      });
+      
+      if (!res.ok) {
+        const txt = await res.text().catch(() => null);
+        throw new Error(`API error: ${res.status}${txt ? ': ' + txt : ''}`);
+      }
+      
+      return await res.json();
+    }
+
+    async function onFetchClicked() {
+      clearError();
+      setNotice('');
+      resetResult();
+
+      const url = (tiktokUrlInput.value || '').trim();
+      if (!url) {
+        showError('Please paste a TikTok URL first.');
+        return;
+      }
+
+      if (!url.includes('tiktok.com')) {
+        showError('Please enter a valid TikTok URL.');
+        return;
+      }
+
+      showLoading(true);
+      titleEl.textContent = 'Loading...';
+      resultWrapper.classList.remove('hidden');
+
+      try {
+        const json = await fetchTikTokData(url);
+
+        if (!json || !json.success || !json.result) {
+          throw new Error(json?.error || 'Invalid response from API');
+        }
+
+        const r = json.result;
+        
+        // Set basic info
+        coverEl.src = r.cover || '';
+        coverEl.alt = r.title || 'Video cover';
+        titleEl.textContent = r.title || 'No title';
+        
+        // Author info
+        if (r.author) {
+          authorAvatarEl.src = r.author.avatar || '';
+          authorNameEl.textContent = r.author.name || '';
+          authorUsernameEl.textContent = r.author.username || '';
+        }
+        
+        // Stats
+        if (r.stats) {
+          playEl.textContent = r.stats.play || '0';
+          likeEl.textContent = r.stats.like || '0';
+          commentEl.textContent = r.stats.comment || '0';
+          shareEl.textContent = r.stats.share || '0';
+        }
+        
+        createAtEl.textContent = r.create_at || '';
+
+        // Music info
+        if (r.music_info && r.music_info.title) {
+          musicTitleEl.textContent = r.music_info.title;
+          musicAuthorEl.textContent = r.music_info.author || 'Unknown';
+          musicInfoEl.classList.remove('hidden');
+        }
+
+        const safeTitle = (r.title || 'tiktok').replace(/[^\w\s\-]/g, '').slice(0, 60).replace(/\s+/g, '_');
+
+        // Video download
+        if (r.videoUrl) {
+          enableLink(downloadVideo, r.videoUrl, safeTitle + '.mp4');
+          openVideo.onclick = () => window.open(r.videoUrl, '_blank', 'noopener');
+          openVideo.disabled = false;
+        } else {
+          downloadVideo.classList.add('disabled');
+          openVideo.disabled = true;
+        }
+
+        // Audio download
+        if (r.musicUrl) {
+          enableLink(downloadAudio, r.musicUrl, safeTitle + '_audio.mp3');
+        } else {
+          downloadAudio.classList.add('disabled');
+        }
+
+        // Handle image albums
+        if (r.images && Array.isArray(r.images) && r.images.length > 0) {
+          imagesWrapper.classList.remove('hidden');
+          imagesList.innerHTML = '';
+          r.images.forEach((imgUrl, index) => {
+            const imgDiv = document.createElement('div');
+            imgDiv.className = 'image-item';
+            imgDiv.innerHTML = `
+              <img src="${imgUrl}" alt="Image ${index + 1}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin: 5px;">
+              <a href="${imgUrl}" download="${safeTitle}_image_${index + 1}.jpg" class="btn ghost" style="font-size: 12px; padding: 5px 8px;">Download</a>
+            `;
+            imagesList.appendChild(imgDiv);
+          });
+          
+          // Hide video download if it's an image album
+          if (!r.videoUrl) {
+            downloadVideo.style.display = 'none';
+            openVideo.style.display = 'none';
+          }
+        }
+
+        setNotice('Successfully fetched TikTok data!');
+      } catch (err) {
+        const message = err.message || String(err);
+        
+        if (message.includes('CORS') || message.includes('Failed to fetch') || message.includes('NetworkError')) {
+          showError('Network error. If running locally, make sure the server is running. If deployed, check API endpoint.');
+          setNotice('For local development: Run "npm start" in terminal and open http://localhost:3000');
+        } else if (message.includes('API error: 429')) {
+          showError('API rate limit exceeded. Please try again in a few minutes.');
+        } else {
+          showError('Error: ' + message);
+        }
+        
+        resetResult();
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Example button prefill
+    exampleBtn.addEventListener('click', () => {
+      const examples = [
+        'https://vm.tiktok.com/ZSNq1KD75/',
+        'https://www.tiktok.com/@tiktok/video/7106681361842048302',
+        'https://vt.tiktok.com/ZSNq1bBxT/'
+      ];
+      const randomExample = examples[Math.floor(Math.random() * examples.length)];
+      tiktokUrlInput.value = randomExample;
+      onFetchClicked();
+    });
+
+    // Event listeners
+    fetchBtn.addEventListener('click', onFetchClicked);
+    tiktokUrlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') onFetchClicked();
+    });
+
+    // Auto-focus input
+    tiktokUrlInput.focus();
+
+    // Check if running as file:// and show notice
+    if (location.protocol === 'file:') {
+      setNotice('Running as local file. For full functionality, run "npm start" in terminal and open http://localhost:3000');
+      
+      // Update API URL for file:// protocol
+      window.fetchTikTokData = async function(fullUrl) {
+        // Use a public CORS proxy as fallback for file://
+        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+        const apiUrl = 'https://tikwm.com/api/?url=' + encodeURIComponent(fullUrl);
+        
+        try {
+          const res = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+          if (!res.ok) throw new Error('Proxy error');
+          const data = await res.json();
+          
+          return {
+            success: true,
+            result: {
+              title: data.data.title,
+              cover: data.data.cover,
+              create_at: new Date(data.data.create_time * 1000).toLocaleString(),
+              stats: {
+                play: formatNumber(data.data.play_count),
+                like: formatNumber(data.data.digg_count),
+                comment: formatNumber(data.data.comment_count),
+                share: formatNumber(data.data.share_count)
+              },
+              music_info: {
+                title: data.data.music_info.title,
+                author: data.data.music_info.author
+              },
+              author: {
+                name: data.data.author.nickname,
+                username: '@' + data.data.author.unique_id,
+                avatar: data.data.author.avatar
+              },
+              musicUrl: data.data.music,
+              videoUrl: data.data.images ? null : data.data.play,
+              images: data.data.images || null
+            }
+          };
+        } catch (error) {
+          throw new Error('Please run the local server for full functionality');
+        }
+      };
+    }
+  </script>
+</body>
+</html>
