@@ -15,7 +15,7 @@
       --radius:12px;
       --max-width:980px;
       color-scheme: dark;
-      --sidebar-width:240px;
+      --sidebar-width:300px;
     }
     *{box-sizing:border-box}
     html,body{height:100%; margin:0; padding:0}
@@ -26,7 +26,6 @@
       display:flex;
       flex-direction:column;
       min-height:100vh;
-      padding-right: var(--sidebar-width);
     }
 
     .container{
@@ -39,7 +38,34 @@
 
     header.header{
       padding:20px 0 10px;
+      display:flex;
+      align-items:center;
+      gap:20px;
     }
+    .hamburger{
+      background:none;
+      border:none;
+      color:var(--muted);
+      cursor:pointer;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      border-radius:6px;
+      transition:background 0.2s;
+    }
+    .hamburger:hover{
+      background:rgba(255,255,255,0.05);
+    }
+    .hamburger span{
+      display:block;
+      width:24px;
+      height:2px;
+      background:var(--muted);
+      border-radius:1px;
+      transition:transform 0.2s;
+    }
+    .brand{flex:1}
     .brand h1{margin:0;font-size:24px;letter-spacing:0.5px}
     .tag{margin:6px 0 0;color:var(--muted);font-size:14px}
 
@@ -174,45 +200,112 @@
       margin-top:30px;
     }
 
-    /* Sidebar */
-    .sidebar{
+    /* Developer Sidebar */
+    .dev-sidebar{
       position:fixed;
-      right:0;
+      left:0;
       top:0;
       bottom:0;
       width:var(--sidebar-width);
-      padding:20px 16px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-left:1px solid rgba(255,255,255,0.04);
+      background:linear-gradient(180deg, var(--panel) 0%, #0a1422 100%);
+      border-right:1px solid rgba(255,255,255,0.04);
       display:flex;
       flex-direction:column;
-      gap:16px;
-      align-items:flex-start;
-      overflow-y:auto;
-      z-index:100;
+      transform:translateX(-100%);
+      transition:transform 0.3s ease;
+      z-index:1000;
+      box-shadow: 5px 0 30px rgba(0,0,0,0.3);
     }
-    .dev-toggle{
-      width:100%;
-      text-align:left;
-      padding:10px 12px;
-      border-radius:8px;
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.06);
+    .dev-sidebar.active{
+      transform:translateX(0);
+    }
+    .sidebar-header{
+      padding:24px 20px;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .sidebar-header h2{
+      margin:0;
+      font-size:20px;
+      color:var(--accent);
+    }
+    .close-sidebar{
+      background:none;
+      border:none;
       color:var(--muted);
-      font-weight:600;
-      font-size:14px;
+      font-size:24px;
       cursor:pointer;
+      padding:0;
+      width:32px;
+      height:32px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:6px;
       transition:background 0.2s;
     }
-    .dev-toggle:hover{
-      background:rgba(255,255,255,0.03);
+    .close-sidebar:hover{
+      background:rgba(255,255,255,0.05);
     }
-    .dev-list{display:flex;flex-direction:column;gap:16px;width:100%}
-    .dev{display:flex;gap:12px;align-items:flex-start}
-    .dev img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
-    .dev-name{font-weight:700;font-size:15px}
-    .dev-role{color:var(--accent);font-size:13px;margin-top:2px}
-    .dev-bio{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.4}
+    .dev-list{
+      padding:20px;
+      overflow-y:auto;
+      flex:1;
+    }
+    .dev{
+      background:var(--glass);
+      border-radius:12px;
+      padding:20px;
+      border:1px solid rgba(255,255,255,0.04);
+      margin-bottom:16px;
+    }
+    .dev:last-child{
+      margin-bottom:0;
+    }
+    .dev-header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:16px;
+    }
+    .dev img{
+      width:80px;
+      height:80px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid var(--accent);
+    }
+    .dev-info h3{
+      margin:0 0 4px 0;
+      font-size:18px;
+      color:#fff;
+    }
+    .dev-info .role{
+      color:var(--accent);
+      font-size:14px;
+      font-weight:500;
+    }
+    .dev-bio{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+    .overlay{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(0,0,0,0.5);
+      z-index:999;
+      display:none;
+      backdrop-filter:blur(2px);
+    }
+    .overlay.active{
+      display:block;
+    }
 
     /* Utility classes */
     .hidden{display:none!important}
@@ -231,23 +324,7 @@
       text-align:center;
     }
 
-    /* small screens */
-    @media (max-width:1100px){
-      body{padding-right:0}
-      .sidebar{
-        position:static;
-        width:100%;
-        height:auto;
-        margin-top:30px;
-        border-left:none;
-        border-top:1px solid rgba(255,255,255,0.04);
-        padding:16px;
-      }
-      .dev-list{flex-direction:row}
-      .dev{flex-direction:column;align-items:center;text-align:center;flex:1}
-      .dev img{width:80px;height:80px}
-    }
-
+    /* Responsive */
     @media (max-width:768px){
       .container{padding:16px}
       .card{padding:20px}
@@ -258,11 +335,60 @@
       .stats > div{flex:1;min-width:calc(50% - 14px)}
       .actions{flex-direction:column}
       .btn{width:100%;justify-content:center}
-      .dev-list{flex-direction:column}
+      .dev-sidebar{
+        width:100%;
+        max-width:320px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Hamburger Menu Button -->
+  <button class="hamburger" id="hamburgerBtn" aria-label="Open developer info">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Overlay for closing sidebar -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Developer Sidebar -->
+  <aside class="dev-sidebar" id="devSidebar">
+    <div class="sidebar-header">
+      <h2>Development Team</h2>
+      <button class="close-sidebar" id="closeSidebar" aria-label="Close sidebar">×</button>
+    </div>
+    
+    <div class="dev-list">
+      <div class="dev">
+        <div class="dev-header">
+          <img src="https://ui-avatars.com/api/?name=AJ&background=ff5f6d&color=fff&size=160&bold=true&font-size=0.5" alt="AJ">
+          <div class="dev-info">
+            <h3>AJ</h3>
+            <div class="role">Frontend Developer</div>
+          </div>
+        </div>
+        <div class="dev-bio">
+          Designs and builds user interfaces with focus on user experience and responsive design. Creates seamless interactions and intuitive layouts for web applications.
+        </div>
+      </div>
+
+      <div class="dev">
+        <div class="dev-header">
+          <img src="https://ui-avatars.com/api/?name=Uthuman&background=222a36&color=fff&size=160&bold=true&font-size=0.5" alt="Uthuman">
+          <div class="dev-info">
+            <h3>Uthuman</h3>
+            <div class="role">Backend Developer</div>
+          </div>
+        </div>
+        <div class="dev-bio">
+          Specializes in API development and server-side logic. Ensures data integrity, security, and optimal performance of backend systems.
+        </div>
+      </div>
+    </div>
+  </aside>
+
   <div class="container">
     <header class="header">
       <div class="brand">
@@ -342,31 +468,6 @@
     </footer>
   </div>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <button id="devToggle" class="dev-toggle" aria-expanded="true">Developers</button>
-
-    <div id="devList" class="dev-list">
-      <div class="dev">
-        <img src="https://ui-avatars.com/api/?name=AJ&background=ff5f6d&color=fff&size=120" alt="AJ avatar" />
-        <div>
-          <div class="dev-name">AJ</div>
-          <div class="dev-role">Frontend Developer</div>
-          <div class="dev-bio">Designs and builds user interfaces for seamless experiences.</div>
-        </div>
-      </div>
-
-      <div class="dev">
-        <img src="https://ui-avatars.com/api/?name=Uthuman&background=222a36&color=fff&size=120" alt="Uthuman avatar" />
-        <div>
-          <div class="dev-name">Uthuman</div>
-          <div class="dev-role">Backend Developer</div>
-          <div class="dev-bio">Handles API integration and server-side functionality.</div>
-        </div>
-      </div>
-    </div>
-  </aside>
-
   <script>
     // Elements
     const fetchBtn = document.getElementById('fetchBtn');
@@ -392,14 +493,35 @@
     const musicAuthorEl = document.getElementById('musicAuthor');
     const imagesWrapper = document.getElementById('imagesWrapper');
     const imagesList = document.getElementById('imagesList');
-    const devToggle = document.getElementById('devToggle');
-    const devList = document.getElementById('devList');
+    
+    // Sidebar elements
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const devSidebar = document.getElementById('devSidebar');
+    const overlay = document.getElementById('overlay');
 
-    // Developer toggle
-    devToggle.addEventListener('click', () => {
-      const hidden = devList.classList.toggle('hidden');
-      devToggle.setAttribute('aria-expanded', String(!hidden));
-      devToggle.textContent = hidden ? 'Show Developers' : 'Hide Developers';
+    // Sidebar functionality
+    function openSidebar() {
+      devSidebar.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebarFunc() {
+      devSidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    hamburgerBtn.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSidebarFunc);
+    overlay.addEventListener('click', closeSidebarFunc);
+
+    // Close sidebar with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && devSidebar.classList.contains('active')) {
+        closeSidebarFunc();
+      }
     });
 
     // Utility functions
